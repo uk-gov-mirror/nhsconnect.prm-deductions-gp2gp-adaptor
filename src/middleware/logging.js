@@ -26,5 +26,5 @@ export const withContext = fn => {
 };
 
 export const eventFinished = () => {
-  logger.info('Event finished', { event: httpContext.get(LOG_EVENT_KEY) });
+  logger.info('Event finished', { event: '' });
 };

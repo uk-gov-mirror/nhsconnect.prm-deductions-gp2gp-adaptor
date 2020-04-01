@@ -1,4 +1,4 @@
-SpESs���$1E836B85-E421-417E-9A6B-FA510311B9EC@@@@@�_multipart/related;boundary="--=_MIME-Boundary";type="text/xml";charset="UTF-8";start="soappart"Sw�`r----=_MIME-Boundary
+----=_MIME-Boundary
 Content-Id: <soappart>
 Content-Type: text/xml; charset=ISO-8859-1
 Content-Transfer-Encoding: 8bit
@@ -16,7 +16,7 @@ Content-Transfer-Encoding: 8bit
          <eb:CPAId>e06af803674408a9d8e8</eb:CPAId>
          <eb:ConversationId>5A36471B-036B-48E1-BBB4-A89AEE0652E1</eb:ConversationId>
          <eb:Service>urn:nhs:names:services:gp2gp</eb:Service>
-         <eb:Action>RCMR_IN030000UK06</eb:Action>
+         <eb:Action>FAKE_IN030000UK06</eb:Action>
          <eb:MessageData>
             <eb:MessageId>31FA3430-6E88-11EA-9384-E83935108FD5</eb:MessageId>
             <eb:Timestamp>2020-03-25T11:03:02Z</eb:Timestamp>
@@ -28,11 +28,11 @@ Content-Transfer-Encoding: 8bit
    </SOAP:Header>
    <SOAP:Body>
       <eb:Manifest SOAP:mustUnderstand="1" eb:version="2.0">
-         <eb:Reference xlink:href="cid:payload@tpp-uk.com/SystmOne/GP2GP1.1A">
+         <eb:Reference xlink:href="cid:19733c52-f66c-4b3d-94e8-20ae526934db@tpp-uk.com/SystmOne/GP2GP1.1A">
             <eb:Schema eb:location="http://www.nhsia.nhs.uk/schemas/HL7-Message.xsd" eb:version="2.0" />
             <hl7ebxml:Payload style="HL7" encoding="XML" version="3.0" />
          </eb:Reference>
-         <eb:Reference xlink:href="cid:attachment1.0@test.com" eb:id="_31B75ED0-6E88-11EA-9384-E83935108FD5">
+         <eb:Reference xlink:href="cid:29733c52-f66c-4b3d-94e8-20ae526934db@test.com" eb:id="_31B75ED0-6E88-11EA-9384-E83935108FD5">
             <eb:Description xml:lang="en-gb">31B75ED0-6E88-11EA-9384-E83935108FD5_patient-attachment.txt.txt</eb:Description>
          </eb:Reference>
       </eb:Manifest>
@@ -731,4 +731,5 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: base64
 
 SGk=
+
 ----=_MIME-Boundary--

@@ -3,26 +3,22 @@ import { updateLogEvent, updateLogEventWithError } from '../../../middleware/log
 import { connectToQueue } from '../helper';
 import { subscriberReadMessageCallback } from './subscriber-read-message-callback';
 
-const initialiseSubscriber = (options = {}) =>
-  new Promise((resolve, reject) => {
-    connectToQueue((err, client) => {
-      if (err) {
-        updateLogEventWithError(err);
-        reject(err);
-      }
+const initialiseSubscriber = (options = {}) => {
+  return connectToQueue((err, client) => {
+    if (err) {
+      updateLogEventWithError(err);
+    }
 
-      updateLogEvent({
-        status: 'Initialising Subscriber',
-        queue: { name: config.queueName, ...options, ackType: options.ack || 'client-individual' }
-      });
-
-      client.subscribe(
-        { destination: config.queueName, ack: 'client-individual', ...options },
-        subscriberReadMessageCallback(client)
-      );
-
-      resolve(client);
+    updateLogEvent({
+      status: 'Initialising Subscriber',
+      queue: { name: config.queueName, ...options, ackType: options.ack || 'client-individual' }
     });
+
+    client.subscribe(
+      { destination: config.queueName, ack: 'auto', ...options },
+      subscriberReadMessageCallback(client)
+    );
   });
+};
 
 export { initialiseSubscriber };

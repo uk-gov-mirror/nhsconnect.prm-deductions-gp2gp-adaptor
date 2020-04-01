@@ -16,11 +16,13 @@ export const subscriberOnMessageCallback = (client, message) => async (err, body
 
   try {
     await handleMessage(body);
+    // client.ack(message);
   } catch (err) {
     updateLogEventWithError(err);
+    // client.ack(message);
   } finally {
-    client.ack(message);
-    updateLogEvent({ status: 'Acknowledged Message' });
+    // updateLogEvent({ status: 'Acknowledged Message' });
     eventFinished();
   }
+  return;
 };

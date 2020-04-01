@@ -5,6 +5,7 @@ import {
   updateLogEventWithError,
   withContext
 } from '../../../middleware/logging';
+import { handleMessage } from "./message-handler";
 
 export const subscriberReadMessageCallback = client => (err, messageStream) => {
   withContext(() => {
@@ -15,7 +16,25 @@ export const subscriberReadMessageCallback = client => (err, messageStream) => {
       eventFinished();
       return;
     }
+    messageStream.readString('UTF-8', async (err, body) => {
+      updateLogEvent({ status: 'Handling Message', queue: { messageId: messageStream.id, body } });
 
-    messageStream.readString('UTF-8', subscriberOnMessageCallback(client, messageStream));
+      if (err) {
+        updateLogEventWithError(err);
+        eventFinished();
+        return;
+      }
+
+      try {
+        await handleMessage(body);
+        client.ack();
+      } catch (err) {
+        updateLogEventWithError(err);
+        client.ack();
+      } finally {
+        // updateLogEvent({ status: 'Acknowledged Message' });
+        eventFinished();
+      }
+    });
   });
 };
