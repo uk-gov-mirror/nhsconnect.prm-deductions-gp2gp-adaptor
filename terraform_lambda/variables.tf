@@ -16,3 +16,11 @@ variable "filename" {
 variable "security_group_id" {
   type = string
 }
+
+variable "auth_key" {
+  type = string
+}
+
+variable "mhs_outbound_url" {
+  default = "localhost"
+}

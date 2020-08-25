@@ -58,6 +58,13 @@ resource "aws_lambda_function" "lambda" {
     security_group_ids = [data.aws_security_group.gp2gp.id]
     subnet_ids = data.aws_subnet_ids.lambda.ids
   }
+
+  environment {
+    variables = {
+      AUTHORIZATION_KEYS = var.auth_key
+      MHS_OUTBOUND_URL = var.mhs_outbound_url
+    }
+  }
 }
 
 resource "aws_api_gateway_rest_api" "api" {
