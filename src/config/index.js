@@ -1,7 +1,7 @@
 const portNumber = 3000;
 
 const initialiseConfig = () => ({
-  deductionsAsid: process.env.DEDUCTIONS_ASID || '200000001161',
+  deductionsAsid: process.env.DEDUCTIONS_ASID || '918999199177',
   deductionsOdsCode: process.env.DEDUCTIONS_ODS_CODE || 'B86041',
   queueName: process.env.MHS_QUEUE_NAME,
   unhandledMessagesQueueName: 'unhandled-raw-inbound',
