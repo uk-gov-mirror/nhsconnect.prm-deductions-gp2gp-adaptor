@@ -3,7 +3,11 @@ import { eventFinished, updateLogEvent } from '../../middleware/logging';
 
 export const putMessageInEhrRepo = async (url, message) => {
   try {
-    const response = await axios.put(url, message);
+    const response = await axios.put(url, message, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
     updateLogEvent({
       ehrRepository: { responseCode: response.status, responseMessage: response.statusText }
     });

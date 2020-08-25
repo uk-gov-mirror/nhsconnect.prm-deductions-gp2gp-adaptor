@@ -4,10 +4,14 @@ import { updateLogEvent } from '../../middleware/logging';
 
 export const setTransferComplete = async body => {
   try {
-    const response = await axios.patch(`${config.ehrRepoUrl}/fragments`, {
-      body,
-      transferComplete: true
-    });
+    const response = await axios.patch(
+      `${config.ehrRepoUrl}/fragments`,
+      {
+        body,
+        transferComplete: true
+      },
+      { headers: { Authorization: process.env.AUTHORIZATION_KEYS } }
+    );
     updateLogEvent({ ehrRepository: { transferSuccessful: true } });
     return response;
   } catch (err) {

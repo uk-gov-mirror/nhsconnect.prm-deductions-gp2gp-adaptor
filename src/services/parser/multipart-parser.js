@@ -48,9 +48,18 @@ const extractBody = messagePart => {
 };
 
 const parseMultipartBody = multipartMessage =>
-  extractBoundaryContent(multipartMessage).map(messagePart => ({
-    headers: extractHeaders(messagePart),
-    body: extractBody(messagePart)
-  }));
+{
+  let jsonMsg = JSON.parse("{" + multipartMessage.split("{").slice(1).join("{"));
+  return [
+    {
+      headers: [],
+      body: jsonMsg.ebXML
+    },
+    {
+      headers: [],
+      body: jsonMsg.payload
+    }
+  ];
+};
 
 export { parseMultipartBody };

@@ -36,6 +36,7 @@ const sendMessage = ({ interactionId, conversationId, odsCode = 'YES', message }
         'Sync-Async': false,
         'Correlation-Id': conversationId,
         'Ods-Code': odsCode,
+        'wait-for-response': false,
         'from-asid': config.deductionsAsid
       }
     };
