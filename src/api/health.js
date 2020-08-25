@@ -9,12 +9,7 @@ router.get('/', (req, res, next) => {
     .then(status => {
       updateLogEvent({ status: 'Health check completed' });
 
-      if (status.details.mhs.connected) {
-        res.status(200).send(status);
-      } else {
-        updateLogEvent(status);
-        res.status(503).send(status);
-      }
+      res.status(200).send(status);
     })
     .catch(err => {
       updateLogEventWithError(err);

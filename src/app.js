@@ -11,11 +11,13 @@ import { options } from './config/logging';
 import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
+import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 
 httpContext.enable();
 
 const app = express();
 
+app.use(awsServerlessExpressMiddleware.eventContext());
 app.use(express.json());
 app.use(correlationInfo.middleware);
 app.use(requestLogger(options));
