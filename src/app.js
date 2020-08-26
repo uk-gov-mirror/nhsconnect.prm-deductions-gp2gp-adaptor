@@ -12,6 +12,7 @@ import * as correlationInfo from './middleware/correlation';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
+import ehrResponse from './api/ehr-response';
 
 httpContext.enable();
 
@@ -28,6 +29,7 @@ app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographics);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
+app.use('/ehr-response', logging.middleware, ehrResponse);
 
 app.use(errorLogger(options));
 

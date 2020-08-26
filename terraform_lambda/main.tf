@@ -45,6 +45,11 @@ data "aws_subnet_ids" "lambda" {
   vpc_id = data.aws_security_group.gp2gp.vpc_id
 }
 
+data "aws_vpc_endpoint" "apigw_endpoint" {
+  vpc_id = data.aws_security_group.gp2gp.vpc_id
+  service_name = "com.amazonaws.us-east-2.execute-api"
+}
+
 resource "aws_lambda_function" "lambda" {
   function_name = var.functionName
   source_code_hash = filebase64sha256(var.filename)
@@ -67,8 +72,20 @@ resource "aws_lambda_function" "lambda" {
   }
 }
 
+data "template_file" "gateway_policy" {
+  template = file("gateway_policy.json")
+  vars = {
+    vpc_id = data.aws_subnet_ids.lambda.vpc_id
+  }
+}
+
 resource "aws_api_gateway_rest_api" "api" {
   name = "gp2gpApi"
+  endpoint_configuration {
+    types = ["PRIVATE"]
+    vpc_endpoint_ids = [data.aws_vpc_endpoint.apigw_endpoint.id]
+  }
+  policy = data.template_file.gateway_policy.rendered
 }
 
 resource "aws_api_gateway_resource" "resource" {
