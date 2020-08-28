@@ -58,7 +58,7 @@ resource "aws_lambda_function" "lambda" {
   runtime = "nodejs12.x"
   filename = var.filename
   timeout = 30
-  memory_size = 256
+  memory_size = 512
   vpc_config {
     security_group_ids = [data.aws_security_group.gp2gp.id]
     subnet_ids = data.aws_subnet_ids.lambda.ids
@@ -68,6 +68,7 @@ resource "aws_lambda_function" "lambda" {
     variables = {
       AUTHORIZATION_KEYS = var.auth_key
       MHS_OUTBOUND_URL = var.mhs_outbound_url
+      EHR_REPO_URL = "https://wiqp622g1i.execute-api.us-east-2.amazonaws.com/dev"
     }
   }
 }
