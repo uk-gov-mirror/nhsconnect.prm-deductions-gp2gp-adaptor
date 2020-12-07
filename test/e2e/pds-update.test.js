@@ -1,53 +1,12 @@
 import axios from 'axios';
 import adapter from 'axios/lib/adapters/http';
-import { v4 } from 'uuid';
-import testData from '../../src/templates/__tests__/testData.json';
 import { config } from '../config';
-
-const getAndValidatePatientPdsDetails = async nhsNumber => {
-  const pdsResponse = await axios.get(
-    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
-    {
-      headers: {
-        Authorization: config.gp2gpAdaptorAuthorizationKeys
-      },
-      adapter
-    }
-  );
-  expect(pdsResponse.status).toBe(200);
-
-  return pdsResponse.data.data;
-};
-
-const updateAndValidatePatientOdsCode = async (
-  nhsNumber,
-  pdsId,
-  serialChangeNumber,
-  newOdsCode
-) => {
-  const pdsResponse = await axios.patch(
-    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
-    {
-      pdsId,
-      serialChangeNumber,
-      newOdsCode,
-      conversationId: v4()
-    },
-    {
-      headers: {
-        Authorization: config.gp2gpAdaptorAuthorizationKeys
-      },
-      adapter
-    }
-  );
-  expect(pdsResponse.status).toBe(204);
-};
 
 describe('Patient ODS code update in PDS', () => {
   const RETRY_COUNT = 20;
   const POLLING_INTERVAL_MS = 500;
-  // timeout for the jest test case
-  const TIMEOUT = 3 * RETRY_COUNT * POLLING_INTERVAL_MS;
+  const TEST_TIMEOUT = 3 * RETRY_COUNT * POLLING_INTERVAL_MS;
+
   const testData = {
     dev: {},
     test: {
@@ -56,14 +15,16 @@ describe('Patient ODS code update in PDS', () => {
       nhsNumber: 9692295990
     }
   };
+
   it(
     'should update ODS code of the patient',
     async () => {
       const { nhsNumber, odsCode1, odsCode2 } = testData[config.nhsEnvironment];
       const {
         odsCode: oldOdsCode,
-        pdsId,
-        serialChangeNumber
+        patientPdsId,
+        serialChangeNumber,
+        conversationId
       } = await getAndValidatePatientPdsDetails(nhsNumber);
 
       let newOdsCode;
@@ -78,7 +39,13 @@ describe('Patient ODS code update in PDS', () => {
         ).toBe(false);
       }
 
-      await updateAndValidatePatientOdsCode(nhsNumber, pdsId, serialChangeNumber, newOdsCode);
+      await updateAndValidatePatientOdsCode(
+        nhsNumber,
+        patientPdsId,
+        serialChangeNumber,
+        newOdsCode,
+        conversationId
+      );
 
       // poll until ODS is as expected
       let patientOdsCode;
@@ -90,12 +57,54 @@ describe('Patient ODS code update in PDS', () => {
           break;
         }
       }
+
       expect(patientOdsCode).toBe(newOdsCode);
     },
-    TIMEOUT
+    TEST_TIMEOUT
   );
 });
 
-function sleep(ms) {
+const sleep = async ms => {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
+};
+
+const getAndValidatePatientPdsDetails = async nhsNumber => {
+  const pdsResponse = await axios.get(
+    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
+    {
+      headers: {
+        Authorization: config.gp2gpAdaptorAuthorizationKeys
+      },
+      adapter
+    }
+  );
+  expect(pdsResponse.status).toBe(200);
+
+  return { ...pdsResponse.data.data, conversationId: pdsResponse.data.conversationId };
+};
+
+const updateAndValidatePatientOdsCode = async (
+  nhsNumber,
+  pdsId,
+  serialChangeNumber,
+  newOdsCode,
+  conversationId
+) => {
+  const pdsResponse = await axios.patch(
+    `${config.gp2gpAdaptorUrl}/patient-demographics/${nhsNumber}`,
+    {
+      pdsId,
+      serialChangeNumber,
+      newOdsCode,
+      conversationId
+    },
+    {
+      headers: {
+        Authorization: config.gp2gpAdaptorAuthorizationKeys
+      },
+      adapter
+    }
+  );
+
+  expect(pdsResponse.status).toBe(204);
+};
