@@ -5,7 +5,7 @@ import { config } from '../config';
 describe('Patient ODS code update in PDS', () => {
   const RETRY_COUNT = 20;
   const POLLING_INTERVAL_MS = 500;
-  const TEST_TIMEOUT = 3 * RETRY_COUNT * POLLING_INTERVAL_MS;
+  const TEST_TIMEOUT = 3000 * RETRY_COUNT * POLLING_INTERVAL_MS;
 
   const testData = {
     dev: {},
@@ -19,46 +19,57 @@ describe('Patient ODS code update in PDS', () => {
   it(
     'should update ODS code of the patient',
     async () => {
-      const { nhsNumber, odsCode1, odsCode2 } = testData[config.nhsEnvironment];
-      const {
-        odsCode: oldOdsCode,
-        patientPdsId,
-        serialChangeNumber,
-        conversationId
-      } = await getAndValidatePatientPdsDetails(nhsNumber);
+      for (let i = 0; i < 100; i++) {
+        const { nhsNumber, odsCode1, odsCode2 } = testData[config.nhsEnvironment];
+        const {
+          odsCode: oldOdsCode,
+          patientPdsId,
+          serialChangeNumber,
+          conversationId
+        } = await getAndValidatePatientPdsDetails(nhsNumber);
 
-      let newOdsCode;
-      if (oldOdsCode === odsCode1) {
-        newOdsCode = odsCode2;
-      } else if (oldOdsCode === odsCode2) {
-        newOdsCode = odsCode1;
-      } else {
-        expect(
-          true,
-          'Patient allocated to automated tests is assigned to unexpected ODS code'
-        ).toBe(false);
-      }
+        console.log('get pds details done', i);
 
-      await updateAndValidatePatientOdsCode(
-        nhsNumber,
-        patientPdsId,
-        serialChangeNumber,
-        newOdsCode,
-        conversationId
-      );
-
-      // poll until ODS is as expected
-      let patientOdsCode;
-      for (let i = 0; i < RETRY_COUNT; i++) {
-        const pdsDetails = await getAndValidatePatientPdsDetails(nhsNumber);
-        patientOdsCode = pdsDetails.odsCode;
-        await sleep(POLLING_INTERVAL_MS);
-        if (patientOdsCode === newOdsCode) {
-          break;
+        let newOdsCode;
+        if (oldOdsCode === odsCode1) {
+          newOdsCode = odsCode2;
+        } else if (oldOdsCode === odsCode2) {
+          newOdsCode = odsCode1;
+        } else {
+          expect(
+            true,
+            'Patient allocated to automated tests is assigned to unexpected ODS code'
+          ).toBe(false);
         }
-      }
 
-      expect(patientOdsCode).toBe(newOdsCode);
+        await updateAndValidatePatientOdsCode(
+          nhsNumber,
+          patientPdsId,
+          serialChangeNumber,
+          newOdsCode,
+          conversationId
+        );
+
+        // poll until ODS is as expected
+        let patientOdsCode;
+        for (let i = 0; i < RETRY_COUNT; i++) {
+          const pdsDetails = await getAndValidatePatientPdsDetails(nhsNumber);
+          patientOdsCode = pdsDetails.odsCode;
+          await sleep(POLLING_INTERVAL_MS);
+          if (patientOdsCode === newOdsCode) {
+            break;
+          }
+        }
+
+        await axios.get(`${config.gp2gpAdaptorUrl}/queue`, {
+          headers: {
+            Authorization: config.gp2gpAdaptorAuthorizationKeys
+          },
+          adapter
+        });
+
+        expect(patientOdsCode).toBe(newOdsCode);
+      }
     },
     TEST_TIMEOUT
   );

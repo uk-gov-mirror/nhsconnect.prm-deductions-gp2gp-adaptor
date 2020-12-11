@@ -4,6 +4,7 @@ import { errorLogger, logger as requestLogger } from 'express-winston';
 import swaggerUi from 'swagger-ui-express';
 import error from './api/error';
 import healthCheck from './api/health';
+import queueRouter from './api/queue';
 import { healthRecordRequestRouter } from './api/health-record-requests';
 import { patientDemographics } from './api/patient-demographics';
 import { options } from './config/logging';
@@ -22,6 +23,7 @@ app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/patient-demographics', logging.middleware, patientDemographics);
 app.use('/health-record-requests', logging.middleware, healthRecordRequestRouter);
+app.use('/queue', logging.middleware, queueRouter);
 
 app.use(errorLogger(options));
 
