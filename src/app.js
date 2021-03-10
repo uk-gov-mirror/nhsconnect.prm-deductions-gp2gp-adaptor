@@ -10,6 +10,7 @@ import { healthRecordTransferRouter } from './api/health-record-transfers';
 import { options } from './config/logging';
 import * as logging from './middleware/logging';
 import swaggerDocument from './swagger.json';
+import { initializeConfig } from './config';
 
 httpContext.enable();
 
@@ -17,7 +18,6 @@ const app = express();
 
 app.use(express.json());
 app.use(requestLogger(options));
-
 app.use('/health', logging.middleware, healthCheck);
 app.use('/error', logging.middleware, error);
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

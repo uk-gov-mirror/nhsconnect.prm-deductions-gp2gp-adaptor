@@ -1,4 +1,5 @@
 import { createLogger, format, transports } from 'winston';
+import { getSpan, context } from '@opentelemetry/api';
 import traverse from 'traverse';
 import cloneDeep from 'lodash.clonedeep';
 import { initializeConfig } from './index';
@@ -16,7 +17,10 @@ export const obfuscateSecrets = format(info => {
 export const addCommonFields = format(info => {
   const { nhsEnvironment } = initializeConfig();
   const updated = cloneDeep(info);
+  const currentSpan = getSpan(context.active());
+  console.log(currentSpan, 'span');
   updated.level = updated.level.toUpperCase();
+  updated['traceId'] = currentSpan && currentSpan.context().traceId;
   updated['service'] = 'gp2gp-adaptor';
   updated['environment'] = nhsEnvironment;
   return updated;
