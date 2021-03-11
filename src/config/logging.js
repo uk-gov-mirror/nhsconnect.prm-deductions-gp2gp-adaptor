@@ -18,7 +18,6 @@ export const addCommonFields = format(info => {
   const { nhsEnvironment } = initializeConfig();
   const updated = cloneDeep(info);
   const currentSpan = getSpan(context.active());
-  console.log(currentSpan, 'span');
   updated.level = updated.level.toUpperCase();
   updated['traceId'] = currentSpan && currentSpan.context().traceId;
   updated['service'] = 'gp2gp-adaptor';
